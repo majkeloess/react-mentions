@@ -1,6 +1,7 @@
 import findPositionOfCapturingGroup from './findPositionOfCapturingGroup'
 import combineRegExps from './combineRegExps'
 import countPlaceholders from './countPlaceholders'
+import defaultDisplayTransform from './defaultDisplayTransform'
 
 const emptyFn = () => {}
 
@@ -12,7 +13,7 @@ const iterateMentionsMarkup = (
   markupIteratee,
   textIteratee = emptyFn
 ) => {
-  const regex = combineRegExps(config.map(c => c.regex))
+  const regex = combineRegExps(config.map((c) => c.regex))
 
   let accOffset = 2 // first is whole match, second is the for the capturing group of first regexp component
   const captureGroupOffsets = config.map(({ markup }) => {
@@ -28,9 +29,11 @@ const iterateMentionsMarkup = (
 
   // detect all mention markup occurrences in the value and iterate the matches
   while ((match = regex.exec(value)) !== null) {
-    const offset = captureGroupOffsets.find(o => !!match[o]) // eslint-disable-line no-loop-func
+    const offset = captureGroupOffsets.find((o) => !!match[o]) // eslint-disable-line no-loop-func
     const mentionChildIndex = captureGroupOffsets.indexOf(offset)
-    const { markup, displayTransform } = config[mentionChildIndex]
+    const { markup, displayTransform = defaultDisplayTransform } = config[
+      mentionChildIndex
+    ]
     const idPos = offset + findPositionOfCapturingGroup(markup, 'id')
     const displayPos = offset + findPositionOfCapturingGroup(markup, 'display')
 
